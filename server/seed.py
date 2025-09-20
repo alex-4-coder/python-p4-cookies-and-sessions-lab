@@ -1,43 +1,34 @@
-#!/usr/bin/env python3
-
-from random import randint
-
-from faker import Faker
-
-from app import app
-from models import db, Article, User
-
-fake = Faker()
+from app import app, db
+from models import Article
+from datetime import datetime
 
 with app.app_context():
+    print("Seeding data...")
 
-    print("Deleting all records...")
     Article.query.delete()
-    User.query.delete()
 
-    fake = Faker()
-
-    print("Creating users...")
-    users = [User(name=fake.name()) for i in range(25)]
-    db.session.add_all(users)
-
-    print("Creating articles...")
-    articles = []
-    for i in range(100):
-        content = fake.paragraph(nb_sentences=8)
-        preview = content[:25] + '...'
-        
-        article = Article(
-            author=fake.name(),
-            title=fake.sentence(),
-            content=content,
-            preview=preview,
-            minutes_to_read=randint(1,20),
-        )
-
-        articles.append(article)
+    articles = [
+        Article(
+            title="Flask Cookies and Sessions",
+            content="This article explains how cookies and sessions work in Flask applications...",
+            author="Alex",
+            date=datetime.utcnow()
+        ),
+        Article(
+            title="Understanding SQLAlchemy",
+            content="SQLAlchemy is a powerful ORM for Python that allows developers to interact with databases...",
+            author="Stacey",
+            date=datetime.utcnow()
+        ),
+        Article(
+            title="React and Flask Integration",
+            content="You can connect a Flask backend with a React frontend to build full-stack applications...",
+            author="Jane",
+            date=datetime.utcnow()
+        ),
+    ]
 
     db.session.add_all(articles)
-    
     db.session.commit()
-    print("Complete.")
+
+    print("Seeding complete!")
